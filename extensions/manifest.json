@@ -1,0 +1,16 @@
+{
+    "name": "ChatWork Quick Info Input",
+    "version": "1.0",
+    "manifest_version": 2,
+    "description": "ChatWorkの[info]を早く入力する拡張機能",
+    "content_security_policy": "script-src 'self'; object-src 'self'",
+    "icons": {
+        "16" : "images/icon_16.png",
+        "48" : "images/icon_48.png",
+        "128": "images/icon_128.png"
+    },
+    "content_scripts": [{
+        "matches": ["*://*.chatwork.com/*","*://chatwork.com/*"],
+        "js": ["scripts/core.js"]
+    }]
+}
