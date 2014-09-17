@@ -3,5 +3,6 @@
 Chrome Extension。
 
 
-##### メッセージ記法
-http://developer.chatwork.com/ja/messagenotation.html
+メッセージ記法は[こちら](http://developer.chatwork.com/ja/messagenotation.html)
+
+[Chrome ウェブストア](https://chrome.google.com/webstore/detail/chatwork-quick-info-input/glmhnchbmjhmjcopmmfamopongifahan?hl=ja)でも公開しました。
