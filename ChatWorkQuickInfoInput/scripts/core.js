@@ -151,6 +151,21 @@ if (isChatPage()) {
 
     chatToolbarEl.appendChild(infoWithTitleBtn);
 
+    // キーボードショートカット
+    document.getElementById('_chatText').addEventListener('keydown', function(e) {
+        var code = e.which,
+            keyChar = String.fromCharCode(code).toLowerCase();
+        if (e.ctrlKey) {
+            if (keyChar === 'i') {
+                // info追加
+                infoFn(false);
+            } else if (keyChar === 't') {
+                // titleつきでinfo追加
+                infoFn(true);
+            }
+        }
+    }, false);
+
 }
 
 // }}}
