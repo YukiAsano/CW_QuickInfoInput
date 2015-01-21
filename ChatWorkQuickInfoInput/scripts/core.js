@@ -70,11 +70,12 @@ if (isChatPage()) {
 
     var infoBtn,
         infoWithTitleBtn,
+        codeBtn,
         chatToolbarEl = document.getElementById("_chatSendTool"),
-        infoFn = function(bTitle) {
+        actionFn = function(action, bTitle) {
             var el,
-                startTag = "[info]",
-                endTag = "[/info]",
+                startTag = "["+action+"]",
+                endTag = "[/"+action+"]",
                 startTtlTag = "[title]",
                 endTtlTag = "[/title]",
                 ttlText,
@@ -132,7 +133,7 @@ if (isChatPage()) {
     });
 
     infoBtn.addEventListener('click', function() {
-        infoFn(false);
+        actionFn('info', false);
     }, false);
 
     chatToolbarEl.appendChild(infoBtn);
@@ -146,10 +147,23 @@ if (isChatPage()) {
     });
 
     infoWithTitleBtn.addEventListener('click', function() {
-        infoFn(true);
+        actionFn('info', true);
     }, false);
 
     chatToolbarEl.appendChild(infoWithTitleBtn);
+
+    // codeタグ生成のボタン
+    codeBtn = getButtonEl({
+        id: "_insertCode",
+        label: "メッセージに[code][/code]を追加します",
+        iconCls: "icoFontSetting"
+    });
+
+    codeBtn.addEventListener('click', function() {
+        actionFn('code', false);
+    }, false);
+
+    chatToolbarEl.appendChild(codeBtn);
 
     // キーボードショートカット
     document.getElementById('_chatText').addEventListener('keydown', function(e) {
@@ -158,10 +172,13 @@ if (isChatPage()) {
         if (e.ctrlKey) {
             if (keyChar === 'i') {
                 // info追加
-                infoFn(false);
+                actionFn('info', false);
             } else if (keyChar === 't') {
                 // titleつきでinfo追加
-                infoFn(true);
+                actionFn('info', true);
+            } else if (keyChar === 'w') {
+                // code追加
+                actionFn('code', false);
             }
         }
     }, false);
