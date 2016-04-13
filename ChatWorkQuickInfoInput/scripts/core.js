@@ -45,8 +45,9 @@ function getButtonEl(args){
     // {{{ ボタンの中身を生成
 
     innerEl = document.createElement("span");
-    innerEl.className = "icoSizeLarge";
+    innerEl.className = args.iconNoLg ? "" : "icoSizeLarge";
     innerEl.style.color = args.color || undefined;
+    innerEl.innerHTML = args.html ? args.html : "";
 
 
     // ボタンによって変える部分
@@ -71,11 +72,13 @@ if (isChatPage()) {
     var infoBtn,
         infoWithTitleBtn,
         codeBtn,
+        qtBtn,
+        hrBtn,
         chatToolbarEl = document.getElementById("_chatSendTool"),
-        actionFn = function(action, bTitle) {
+        actionFn = function(action, bTitle, noEnd) {
             var el,
                 startTag = "["+action+"]",
-                endTag = "[/"+action+"]",
+                endTag = noEnd ? "" : "[/"+action+"]",
                 startTtlTag = "[title]",
                 endTtlTag = "[/title]",
                 ttlText,
@@ -129,7 +132,7 @@ if (isChatPage()) {
     infoBtn = getButtonEl({
         id: "_infoText",
         label: "メッセージに[info][/info]を追加します",
-        iconCls: "icoFontInfo"
+        iconCls: "icoFontAdminInfoMenu"
     });
 
     infoBtn.addEventListener('click', function() {
@@ -142,7 +145,7 @@ if (isChatPage()) {
     infoWithTitleBtn = getButtonEl({
         id: "_infoText",
         label: "メッセージに[info][title][/title][/info]を追加します",
-        iconCls: "icoFontInfo",
+        iconCls: "icoFontAdminInfoMenu",
         color: "blue"
     });
 
@@ -165,6 +168,35 @@ if (isChatPage()) {
 
     chatToolbarEl.appendChild(codeBtn);
 
+    // qtタグ生成のボタン
+    qtBtn = getButtonEl({
+        id: "_insertCode",
+        label: "メッセージに[qt][/qt]を追加します",
+        iconCls: "icoFontMessegeQuote",
+        iconNoLg: true
+    });
+
+    qtBtn.addEventListener('click', function() {
+        actionFn('qt', false);
+    }, false);
+
+    chatToolbarEl.appendChild(qtBtn);
+
+    // hrタグ生成のボタン
+    hrBtn = getButtonEl({
+        id: "_insertCode",
+        label: "メッセージに[hr]を追加します",
+        iconCls: "btnPrimary toolTip",
+        iconNoLg: true,
+        html: "&nbsp;hr&nbsp;"
+    });
+
+    hrBtn.addEventListener('click', function() {
+        actionFn('hr', false, true);
+    }, false);
+
+    chatToolbarEl.appendChild(hrBtn);
+
     // キーボードショートカット
     document.getElementById('_chatText').addEventListener('keydown', function(e) {
         var code = e.which,
@@ -182,7 +214,6 @@ if (isChatPage()) {
             }
         }
     }, false);
-
 }
 
 // }}}
