@@ -132,7 +132,7 @@ if (isChatPage()) {
 
     infoBtn = getButtonEl({
         id: "_infoText",
-        label: "メッセージに[info][/info]を追加します（Ctrl+Alt+i）",
+        label: "メッセージに[info][/info]を追加します（Ctrl+i）",
         iconCls: "icoFontInfo"
     });
 
