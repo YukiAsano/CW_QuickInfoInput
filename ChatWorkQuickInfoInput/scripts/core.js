@@ -147,7 +147,7 @@ if (isChatPage()) {
 
     infoWithTitleBtn = getButtonEl({
         id: "_infoWithTitleText",
-        label: "メッセージに[info][title][/title][/info]を追加します（Ctrl+Alt+t）",
+        label: "メッセージに[info][title][/title][/info]を追加します",
         iconCls: "icoFontInfo",
         color: "blue"
     });
@@ -163,7 +163,7 @@ if (isChatPage()) {
 
     codeBtn = getButtonEl({
         id: "_insertCodeText",
-        label: "メッセージに[code][/code]を追加します（Ctrl+Alt+w）",
+        label: "メッセージに[code][/code]を追加します",
         iconCls: "icoFontSetting"
     });
 
