@@ -1,6 +1,6 @@
 {
     "name": "ChatWork Quick Info Input",
-    "version": "1.8",
+    "version": "1.9",
     "manifest_version": 2,
     "description": "ChatWorkの[info][/info]を素早く入力する拡張機能",
     "content_security_policy": "script-src 'self'; object-src 'self'",
@@ -10,7 +10,7 @@
         "128": "images/icon_128.png"
     },
     "content_scripts": [{
-        "matches": ["*://*.chatwork.com/*","*://chatwork.com/*"],
+        "matches": ["*://*.chatwork.com/*","*://chatwork.com/*","*://kcw.kddi.ne.jp/*"],
         "js": ["scripts/core.js"]
     }]
 }

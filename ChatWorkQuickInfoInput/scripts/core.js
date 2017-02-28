@@ -34,7 +34,7 @@ function getButtonEl(args){
 
     el = document.createElement("li");
     el.setAttribute("role", "button");
-    el.className = "_showDescription";
+    el.className = "_showDescription chatInput__emoticon";
     el.style.display = "inline-block";
 
     // ボタンによって変える部分
