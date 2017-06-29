@@ -52,6 +52,13 @@ function getButtonEl(args){
     // ボタンによって変える部分
     innerEl.className += args.iconNoLg ? "" : " icoSizeLarge";
 
+    // スタイルを調整
+    for (var property in args.style) {
+        if (args.style.hasOwnProperty(property)) {
+            innerEl.style[property] = args.style[property];
+        }
+    }
+
     // }}}
     // {{{ 中身を入れて、返す
 
