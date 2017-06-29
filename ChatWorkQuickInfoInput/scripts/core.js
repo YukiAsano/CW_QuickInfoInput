@@ -202,9 +202,15 @@ if (isChatPage()) {
     hrBtn = getButtonEl({
         id: "_insertHrText",
         label: "メッセージに[hr]を追加します（Ctrl+Alt+l）",
-        iconCls: "btnPrimary toolTip",
+        iconCls: "btnPrimary",
         iconNoLg: true,
-        html: "&nbsp;hr&nbsp;"
+        html: "&nbsp;hr&nbsp;",
+        style: {
+            borderRadius: '4px',
+            padding: '3px 4px',
+            position: 'relative',
+            top: '1px'
+        }
     });
 
     hrBtn.addEventListener("click", function() {
