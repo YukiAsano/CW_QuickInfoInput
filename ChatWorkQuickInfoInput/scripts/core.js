@@ -50,7 +50,8 @@ function getButtonEl(args){
     innerEl.innerHTML = args.html ? args.html : "";
 
     // ボタンによって変える部分
-    innerEl.className += args.iconNoLg ? "" : " icoSizeLarge";
+    innerEl.className += args.iconNoLg ? "" : " icoSizeMiddle";
+    innerEl.style = "padding-bottom: 8px;";
 
     // スタイルを調整
     for (var property in args.style) {
@@ -206,10 +207,11 @@ if (isChatPage()) {
         iconNoLg: true,
         html: "&nbsp;hr&nbsp;",
         style: {
-            borderRadius: '4px',
+            fontSize: '10px',
+            borderRadius: '3px',
             padding: '3px 4px',
             position: 'relative',
-            top: '1px'
+            top: '-2px'
         }
     });
 
