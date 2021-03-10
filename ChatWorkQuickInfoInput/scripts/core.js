@@ -51,7 +51,7 @@ function getButtonEl(args){
 
     // ボタンによって変える部分
     innerEl.className += args.iconNoLg ? "" : " icoSizeMiddle";
-    innerEl.style = "padding-bottom: 8px;";
+    innerEl.style.paddingBottom = "8px";
 
     // スタイルを調整
     for (var property in args.style) {
@@ -72,8 +72,7 @@ function getButtonEl(args){
 // }}}
 // {{{
 
-// チャット画面かチェック
-if (isChatPage()) {
+function createToolButtons() {
 
     var infoBtn,
         infoWithTitleBtn,
@@ -246,5 +245,30 @@ if (isChatPage()) {
 
     // }}}
 }
+
+var reloadFn = function(bInit) {
+    var cnt = 100;
+    var intervalFn = setInterval(function () {
+        //console.log(cnt);
+        if (!cnt || document.getElementById('_infoText') != null) {
+            clearInterval(intervalFn);
+            return false;
+        }
+        if (isChatPage()) {
+            createToolButtons();
+            clearInterval(intervalFn);
+            //console.log('created!');
+            if (bInit) {
+                document.getElementById("_chatSendArea").addEventListener("DOMSubtreeModified", function(e) {
+                    reloadFn();
+                }, false);
+                //console.log('init end');
+            }
+            return false;
+        }
+        --cnt;
+    }, 100);
+}
+reloadFn(true);
 
 // }}}
