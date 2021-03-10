@@ -36,7 +36,7 @@ function getButtonEl(args){
     wrapEl.style.marginRight = "8px";
     el = document.createElement("button");
     el.setAttribute("role", "button");
-    el.className = "_showDescription chatInput__emoticon dmLRfL";
+    el.className = "_showDescription chatInput__emoticon dmLRfL bPTIFV";
     el.style.display = "inline-block";
 
     // ボタンによって変える部分
