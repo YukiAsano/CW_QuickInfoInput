@@ -27,14 +27,16 @@ function getButtonEl(args){
 
     // {{{ 初期化
 
-    var el, innerEl;
+    var wrapEl, el, innerEl;
 
     // }}}
     // {{{ ボタン生成
 
-    el = document.createElement("li");
+    wrapEl = document.createElement("li");
+    wrapEl.style.marginRight = "8px";
+    el = document.createElement("button");
     el.setAttribute("role", "button");
-    el.className = "_showDescription chatInput__emoticon";
+    el.className = "_showDescription chatInput__emoticon dmLRfL";
     el.style.display = "inline-block";
 
     // ボタンによって変える部分
@@ -64,7 +66,8 @@ function getButtonEl(args){
     // {{{ 中身を入れて、返す
 
     el.appendChild(innerEl);
-    return el;
+    wrapEl.appendChild(el);
+    return wrapEl;
 
     // }}}
 }
@@ -79,7 +82,7 @@ function createToolButtons() {
         codeBtn,
         qtBtn,
         hrBtn,
-        chatToolbarEl = document.getElementById("_chatSendTool"),
+        chatToolbarEl = document.getElementById("_file").closest('ul'),
         actionFn = function(action, bTitle, bNoEnd) {
             var el,
                 startTag = "["+action+"]",
