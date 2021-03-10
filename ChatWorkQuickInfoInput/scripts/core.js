@@ -263,7 +263,7 @@ var reloadFn = function(bInit) {
             //console.log('created!');
             if (bInit) {
                 document.getElementById("_chatSendArea").addEventListener("DOMSubtreeModified", function(e) {
-                    reloadFn();
+                    reloadFn(false);
                 }, false);
                 //console.log('init end');
             }
