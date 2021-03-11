@@ -1,277 +1,265 @@
-// {{{
-
-/*
- * チャット画面かチェック
+/**
+ * イベント設定
  */
-function isChatPage() {
-    var ret = false,
-    statusBtn = document.getElementById("_myStatusButton");
-    if (!!statusBtn) {
-        ret = true;
-    }
-    return ret;
-}
-
-// }}}
-// {{{
-
-/*
- * ツールバーのボタン生成
- * {
- *     "id": [id],
- *     "label": [マウスオーバー時のコメント],
- *     "iconCls": [アイコンのクラス]
- * }
- */
-function getButtonEl(args){
-
-    // {{{ 初期化
-
-    var wrapEl, el, innerEl;
-
-    // }}}
-    // {{{ ボタン生成
-
-    wrapEl = document.createElement("li");
-    wrapEl.style.marginRight = "8px";
-    el = document.createElement("button");
-    el.setAttribute("role", "button");
-    el.className = "_showDescription chatInput__emoticon dmLRfL bPTIFV";
-    el.style.display = "inline-block";
-
-    // ボタンによって変える部分
-    el.id = args.id;
-    el.setAttribute("aria-label", args.label);
-
-    // }}}
-    // {{{ ボタンの中身を生成
-
-    innerEl = document.createElement("span");
-    innerEl.className = args.iconCls;
-    innerEl.style.color = args.color || undefined;
-    innerEl.innerHTML = args.html ? args.html : "";
-
-    // ボタンによって変える部分
-    innerEl.className += args.iconNoLg ? "" : " icoSizeMiddle";
-    innerEl.style.paddingBottom = "8px";
-
-    // スタイルを調整
-    for (var property in args.style) {
-        if (args.style.hasOwnProperty(property)) {
-            innerEl.style[property] = args.style[property];
+const handler = (() => {
+    const events = {}
+    let key = 0
+    return {
+        addListener (target, type, listener, capture) {
+            target.addEventListener(type, listener, capture)
+            events[key] = {
+                target: target,
+                type: type,
+                listener: listener,
+                capture: capture
+            }
+            return key++
+        },
+        removeListener (k) {
+            if (k in events) {
+                var e = events[k]
+                e.target.removeEventListener(e.type, e.listener, e.capture)
+            }
+            if (!events.length) {
+                key = 0
+            }
         }
     }
+})()
 
-    // }}}
-    // {{{ 中身を入れて、返す
-
-    el.appendChild(innerEl);
-    wrapEl.appendChild(el);
-    return wrapEl;
-
-    // }}}
-}
-
-// }}}
-// {{{
-
-function createToolButtons() {
-
-    var infoBtn,
-        infoWithTitleBtn,
-        codeBtn,
-        qtBtn,
-        hrBtn,
-        chatToolbarEl = document.getElementById("_file").closest('ul'),
-        actionFn = function(action, bTitle, bNoEnd) {
-            var el,
-                startTag = "["+action+"]",
-                endTag = bNoEnd ? "" : "[/"+action+"]",
-                startTtlTag = "[title]",
-                endTtlTag = "[/title]",
-                ttlText,
-                oldText,
-                selectText = "",
-                startPoint,
-                endPoint,
-                newPoint;
-
-
-            if (bTitle) {
-                // タイトルつきの場合
-                ttlText = prompt("タイトルを入力", "");
-                if (!ttlText) {
-                    return false;
-                }
-                startTag += startTtlTag;
-                startTag += ttlText;
-                startTag += endTtlTag;
-            }
-
-            // テキストエリア取得
-            el = document.getElementById("_chatText"),
-
-            // 元のテキスト
-            oldText = el.value;
-
-            // カーソル位置
-            startPoint = el.selectionStart;
-            endPoint = el.selectionEnd;
-
-            // 新しいカーソル位置
-            newPoint = startPoint + startTag.length;
-
-            if (startPoint != endPoint) {
-                // 選択中の文字取得
-                selectText = oldText.substr(startPoint, endPoint - startPoint);
-
-                newPoint = endPoint + startTag.length + endTag.length;
-            }
-
-            // テキストをカーソル位置に入れる
-            el.value = oldText.substr(0, startPoint) + startTag + selectText + endTag + oldText.substr(endPoint);
-
-            // カーソル位置の移動
-            el.setSelectionRange(newPoint, newPoint);
-
-            // フォーカスを当ててそのまま送信できるように
-            el.focus();
-        };
-
-    // {{{ infoタグ生成のボタン
-
-    infoBtn = getButtonEl({
-        id: "_infoText",
-        label: "メッセージに[info][/info]を追加します（Ctrl+i）",
-        iconCls: "icoFontInfo"
-    });
-
-    infoBtn.addEventListener("click", function() {
-        actionFn("info", false, false);
-    }, false);
-
-    chatToolbarEl.appendChild(infoBtn);
-
-    // }}}
-    // {{{ infoタグ（タイトル付き）生成のボタン
-
-    infoWithTitleBtn = getButtonEl({
-        id: "_infoWithTitleText",
-        label: "メッセージに[info][title][/title][/info]を追加します",
-        iconCls: "icoFontInfo",
-        color: "blue"
-    });
-
-    infoWithTitleBtn.addEventListener("click", function() {
-        actionFn("info", true, false);
-    }, false);
-
-    chatToolbarEl.appendChild(infoWithTitleBtn);
-
-    // }}}
-    // {{{ codeタグ生成のボタン
-
-    codeBtn = getButtonEl({
-        id: "_insertCodeText",
-        label: "メッセージに[code][/code]を追加します",
-        iconCls: "icoFontSetting"
-    });
-
-    codeBtn.addEventListener("click", function() {
-        actionFn("code", false, false);
-    }, false);
-
-    chatToolbarEl.appendChild(codeBtn);
-
-    // }}}
-    // {{{ qtタグ生成のボタン
-
-    qtBtn = getButtonEl({
-        id: "_insertQtText",
-        label: "メッセージに[qt][/qt]を追加します",
-        iconCls: "icoFontMessegeQuote",
-        iconNoLg: true
-    });
-
-    qtBtn.addEventListener("click", function() {
-        actionFn("qt", false, false);
-    }, false);
-
-    chatToolbarEl.appendChild(qtBtn);
-
-    // }}}
-    // {{{ hrタグ生成のボタン
-
-    hrBtn = getButtonEl({
-        id: "_insertHrText",
-        label: "メッセージに[hr]を追加します（Ctrl+Alt+l）",
-        iconCls: "btnPrimary",
+/**
+ * ボタン定義
+ */
+const btns = [
+    {
+        id: '_infoText',
+        label: 'メッセージに[info][/info]を追加します（Ctrl+i）',
+        iconCls: 'icoFontInfo',
+        params: {
+            action: 'info',
+            addEndTag: true
+        }
+    }, {
+        id: '_infoWithTitleText',
+        label: 'メッセージに[info][title][/title][/info]を追加します（Ctrl+t）',
+        iconCls: 'icoFontInfo',
+        color: 'blue',
+        params: {
+            action: 'info',
+            addEndTag: true,
+            addTitle: true
+        }
+    }, {
+        id: '_insertCodeText',
+        label: 'メッセージに[code][/code]を追加します（Ctrl+w）',
+        iconCls: 'icoFontSetting',
+        params: {
+            action: 'code',
+            addEndTag: true
+        }
+    }, {
+        id: '_insertQtText',
+        label: 'メッセージに[qt][/qt]を追加します',
+        iconCls: 'icoFontMessegeQuote',
         iconNoLg: true,
-        html: "&nbsp;hr&nbsp;",
+        params: {
+            action: 'qt',
+            addEndTag: true
+        }
+    }, {
+        id: '_insertHrText',
+        label: 'メッセージに[hr]を追加します（Ctrl+Alt+l）',
+        iconCls: 'btnPrimary',
+        iconNoLg: true,
+        html: '&nbsp;hr&nbsp;',
         style: {
             fontSize: '10px',
             borderRadius: '3px',
             padding: '3px 4px',
             position: 'relative',
             top: '-2px'
+        },
+        params: {
+            action: 'hr',
         }
-    });
+    }
+]
 
-    hrBtn.addEventListener("click", function() {
-        actionFn("hr", false, true);
-    }, false);
+/**
+ * メイン処理
+ */
+const app = {
+    // ボタンに設定したイベントのキー
+    btnEventKeys: [],
 
-    chatToolbarEl.appendChild(hrBtn);
+    /**
+     * 初期化
+     */
+    init () {
+        const me = this
+        me.reload(true)
+    },
 
-    // }}}
-    // {{{ キーボードショートカット
+    /**
+     * チャットページかどうか
+     */
+    isChatPage () {
+        return !!document.getElementById('_myStatusButton')
+    },
 
-    document.getElementById("_chatText").addEventListener("keydown", function(e) {
-        var code = e.which,
-            keyChar = String.fromCharCode(code).toLowerCase();
-        if (e.ctrlKey) {
-            if (keyChar === "i") {
-                // info追加
-                actionFn("info", false, false);
-            } else if (keyChar === "t") {
-                // titleつきでinfo追加
-                actionFn("info", true, false);
-            } else if (keyChar === "w") {
-                // code追加
-                actionFn("code", false, false);
-            } else if (keyChar === "l") {
-                // hr追加
-                actionFn("hr", false, true);
+    /**
+     * 画面更新時処理
+     */
+    reload (init) {
+        const me = this
+        let intervalFn, cnt = 100
+
+        if (!!document.getElementById('_infoText')) {
+            return false
+        }
+
+        intervalFn = setInterval(() => {
+            if (!cnt || !!document.getElementById('_infoText')) {
+                clearInterval(intervalFn)
+                return false
+            }
+            if (me.isChatPage()) {
+                //console.log(cnt);
+                me.createToolBtns()
+                clearInterval(intervalFn)
+                if (init) {
+                    document.getElementById('_chatSendArea').addEventListener('DOMSubtreeModified', (e) => {
+                        me.reload(false)
+                    }, false)
+                }
+            }
+            --cnt
+        }, 100)
+    },
+
+    /**
+     * ボタン設置
+     */
+    createToolBtns () {
+        console.log('createToolBtns');
+        const me = this,
+            chatToolbarEl = document.getElementById('_file').closest('ul')
+
+        me.btnEventKeys.forEach(k => {
+            handler.removeListener(k)
+            console.log(k)
+        })
+
+        me.btnEventKeys = []
+
+        btns.forEach(o => {
+            const btn = me.createBtn(o)
+            let k = handler.addListener(btn, 'click', () => {
+                me.clickAction(o.params)
+            })
+            chatToolbarEl.appendChild(btn)
+            me.btnEventKeys.push(k)
+        })
+
+
+        let k = handler.addListener(document.getElementById('_chatText'), 'keydown', (e) => {
+            let code = e.which,
+                keyChar = String.fromCharCode(code).toLowerCase();
+            if (e.ctrlKey) {
+                //console.log('push');
+                //console.log(keyChar);
+                if (keyChar === 'i') {
+                    me.clickAction(btns[0].params)
+                } else if (keyChar === 't') {
+                    me.clickAction(btns[1].params)
+                } else if (keyChar === 'w') {
+                    me.clickAction(btns[2].params)
+                } else if (keyChar === 'l') {
+                    me.clickAction(btns[4].params)
+                }
+            }
+        }, false);
+        me.btnEventKeys.push(k)
+    },
+
+    /**
+     * ボタン生成
+     */
+    createBtn (args) {
+        const li = document.createElement('li'),
+            btn = document.createElement('button'),
+            span = document.createElement('span')
+
+        li.style.marginRight = '8px'
+
+        btn.id = args.id
+        btn.setAttribute('role', 'button')
+        btn.setAttribute('aria-label', args.label)
+        btn.classList.add('_showDescription', 'chatInput__emoticon', 'dmLRfL', 'bPTIFV')
+        btn.style.display = 'inline-block'
+
+        span.classList.add(args.iconCls || null)
+        args.iconNoLg || span.classList.add('icoSizeMiddle')
+        span.style.color = args.color || undefined
+        span.style.paddingBottom = '8px'
+        span.innerHTML = args.html || ''
+
+        // スタイルを調整
+        for (let property in args.style) {
+            if (args.style.hasOwnProperty(property)) {
+                span.style[property] = args.style[property]
             }
         }
-    }, false);
+        btn.appendChild(span)
+        li.appendChild(btn)
+        return li
+    },
 
-    // }}}
-}
+    /**
+     * クリック時処理
+     */
+    clickAction (args) {
+        const el = document.getElementById('_chatText'),
+            action = args.action || 'info',
+            startTag = '[' + action + ']',
+            endTag = !!args.addEndTag ? '[/' + action + ']' : '',
+            beforeText = el.value,
+            start = el.selectionStart,
+            end = el.selectionEnd
 
-var reloadFn = function(bInit) {
-    var cnt = 100;
-    var intervalFn = setInterval(function () {
-        //console.log(cnt);
-        if (!cnt || document.getElementById('_infoText') != null) {
-            clearInterval(intervalFn);
-            return false;
-        }
-        if (isChatPage()) {
-            createToolButtons();
-            clearInterval(intervalFn);
-            //console.log('created!');
-            if (bInit) {
-                document.getElementById("_chatSendArea").addEventListener("DOMSubtreeModified", function(e) {
-                    reloadFn(false);
-                }, false);
-                //console.log('init end');
+        let titleTag = '', titleText = '',
+            cursor = start, selectText = ''
+
+        if (args.addTitle) {
+            if (!(titleText = prompt('タイトルを入力', ''))) {
+                return false
             }
-            return false;
+            titleTag = [
+                '[title]',
+                    titleText,
+                '[/title]'
+            ].join('')
         }
-        --cnt;
-    }, 100);
-}
-reloadFn(true);
 
-// }}}
+        if (start !== end) {
+            selectText = beforeText.substr(start, end - start)
+            cursor = end + endTag.length
+        }
+        cursor += startTag.length + titleTag.length
+
+        setTimeout(() => {
+            el.value = [
+                beforeText.substr(0, start),
+                startTag,
+                titleTag,
+                selectText,
+                endTag,
+                beforeText.substr(end)
+            ].join('')
+
+            el.setSelectionRange(cursor, cursor)
+            el.focus()
+        }, 10);
+    }
+}
+app.init()
