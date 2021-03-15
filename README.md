@@ -6,7 +6,7 @@
 
 ChatWork用Web Extension。
 
-[Chromeウェブストア](https://chrome.google.com/webstore/detail/chatwork-quick-info-input/glmhnchbmjhmjcopmmfamopongifahan?hl=ja)
+[Chrome ウェブストア](https://chrome.google.com/webstore/detail/chatwork-quick-info-input/glmhnchbmjhmjcopmmfamopongifahan?hl=ja)
 
 ## Features
 
@@ -15,7 +15,7 @@ infoだけでなく、[code][/code]の出力にも対応しています。
 
 メッセージ記法は[こちら](https://developer.chatwork.com/ja/messagenotation.html)
 
-詳しくは[Chromeウェブストア](https://chrome.google.com/webstore/detail/chatwork-quick-info-input/glmhnchbmjhmjcopmmfamopongifahan)をご確認ください。
+詳しくは[Chrome ウェブストア](https://chrome.google.com/webstore/detail/chatwork-quick-info-input/glmhnchbmjhmjcopmmfamopongifahan)をご確認ください。
 
 ## License
 
