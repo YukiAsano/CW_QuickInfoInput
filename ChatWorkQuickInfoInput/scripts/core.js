@@ -13,14 +13,17 @@ const handler = (() => {
                 listener: listener,
                 capture: capture
             }
+            console.log('addListener: '+key);
             return key++
         },
         removeListener (k) {
+            let e
             if (k in events) {
-                var e = events[k]
+                console.log('removeListener: '+k);
+                e = events[k]
                 e.target.removeEventListener(e.type, e.listener, e.capture)
             }
-            if (!events.length) {
+            if (!Object.keys(events).length) {
                 key = 0
             }
         }
@@ -36,6 +39,9 @@ const btns = [
         left: true,
         label: 'メッセージに[info][/info]を追加します [Ctrl + i]',
         iconCls: 'icoFontInfo',
+        innerStyle: {
+            paddingBottom: '4px'
+        },
         params: {
             action: 'info',
             addEndTag: true
@@ -45,7 +51,10 @@ const btns = [
         left: true,
         label: 'メッセージに[info][title][/title][/info]を追加します [Ctrl + t]',
         iconCls: 'icoFontInfo',
-        color: 'blue',
+        innerStyle: {
+            color: 'blue',
+            paddingBottom: '4px'
+        },
         params: {
             action: 'info',
             addEndTag: true,
@@ -56,6 +65,9 @@ const btns = [
         left: true,
         label: 'メッセージに[code][/code]を追加します [Ctrl + w]',
         iconCls: 'icoFontSetting',
+        innerStyle: {
+            paddingBottom: '4px'
+        },
         params: {
             action: 'code',
             addEndTag: true
@@ -66,6 +78,9 @@ const btns = [
         label: 'メッセージに[qt][/qt]を追加します',
         iconCls: 'icoFontMessegeQuote',
         iconNoLg: true,
+        innerStyle: {
+            paddingBottom: '4px'
+        },
         params: {
             action: 'qt',
             addEndTag: true
@@ -77,12 +92,13 @@ const btns = [
         iconCls: 'btnPrimary',
         iconNoLg: true,
         html: '&nbsp;hr&nbsp;',
-        style: {
+        innerStyle: {
             fontSize: '10px',
             borderRadius: '3px',
-            padding: '3px 4px',
+            padding: '3px 1px',
             position: 'relative',
-            top: '-2px'
+            top: '-2px',
+            left: '-1px'
         },
         params: {
             action: 'hr',
@@ -124,10 +140,20 @@ const btns = [
             const style = [
                 '.roomListItem,',
                 '#_roomListArea li[role="listitem"] {',
-                '  padding: 0 	28px 0 8px!important;',
+                '  padding: 0 28px 0 8px!important;',
                 '}',
-                '#_roomListArea li[role="listitem"] div:nth-child(2){',
-                '  top:calc(0.4em)!important;',
+                '#_roomListArea li[role="listitem"] > div:first-of-type > div:first-child {',
+                '  height: 28px;',
+                '}',
+                '#_roomListArea li[role="listitem"] > div:first-of-type > div:first-child > img {',
+                '  width: 28px;',
+                '  height: 28px;',
+                '}',
+                '#_roomListArea li[role="listitem"] > div:first-of-type > div:nth-child(2) {',
+                '  padding: 2px 0 0 0;',
+                '}',
+                '#_roomListArea li[role="listitem"] > div:nth-child(2) {',
+                '  top:calc(0.3em)!important;',
                 '}',
                 '.roomListItem .avatarMedium {',
                 '  width: 27px!important;',
@@ -154,83 +180,158 @@ const btns = [
  * メイン処理
  */
 const app = {
+    // ボタン
+    buttons: [],
+
     // ボタンに設定したイベントのキー
     btnEventKeys: [],
+
+    // キーボードイベントのイベントキー
+    keyboardEventKey: null,
+
+    /**
+     * チャット入力エリア
+     */
+    getInputArea () {
+        return document.getElementById('_chatText')
+    },
+
+    /**
+     * チャット画面かどうか
+     */
+    isChat () {
+        return !!document.getElementById('_chatText') &&
+            !!document.getElementById('_chatSendArea') &&
+            !!document.getElementById('_file') &&
+            !!document.getElementById('_myStatusButton') &&
+            !!document.getElementById('_sendEnterActionArea') &&
+            !!document.querySelector('.messageTooltip__text')
+    },
 
     /**
      * 初期化
      */
     init () {
         const me = this
-        me.reload(true)
-    },
+        let cnt = 100,
+        loadedFn = () => {
+            console.log('load check');
+            if (me.isChat()) {
+                console.log('loaded');
+                clearInterval(checkLoaded)
 
-    /**
-     * チャットページかどうか
-     */
-    isChatPage () {
-        return !!document.getElementById('_myStatusButton')
-    },
+                // ボタン生成
+                me.createButtons()
 
-    /**
-     * 画面更新時処理
-     */
-    reload (init) {
-        const me = this
-        let intervalFn, cnt = 100
+                // ボタン設置
+                me.insert()
 
-        if (!!document.getElementById('_addInfoText')) {
-            return false
-        }
+                const observer = new MutationObserver((list) => {
+                    console.log(list);
+                    for (let mutation of list) {
+                        if (
+                            mutation.type === 'childList' &&
+                            mutation.addedNodes.length
+                        ) {
+                            me.insert()
+                            //console.log('A child node has been added or removed.');
+                            break
+                        }
+                    }
+                })
 
-        intervalFn = setInterval(() => {
-            if (!cnt || !!document.getElementById('_addInfoText')) {
-                clearInterval(intervalFn)
-                return false
+                observer.observe(
+                    document.getElementById('_chatSendArea'),
+                    {
+                        attributes: false,
+                        childList: true,
+                        characterData: false
+                    }
+                )
             }
-            if (me.isChatPage()) {
-                //console.log(cnt);
-                me.createToolBtns()
-                clearInterval(intervalFn)
-                if (init) {
-                    document.getElementById('_chatSendArea').addEventListener('DOMSubtreeModified', (e) => {
-                        me.reload(false)
-                    }, false)
+            if (!--cnt) {
+                console.log('timeout');
+                clearInterval(checkLoaded)
+            }
+        }
+        const checkLoaded = setInterval(loadedFn, 100)
+    },
+
+    /**
+     * キーボードショートカット
+     */
+    setKeyboardEvent () {
+        const me = this
+        handler.removeListener(me.keyboardEventKey)
+        me.keyboardEventKey = handler.addListener(me.getInputArea(), 'keydown', (e) => {
+            const code = e.which,
+                keyChar = String.fromCharCode(code).toLowerCase()
+            if (e.ctrlKey) {
+                console.log('push');
+                console.log(keyChar);
+                switch (keyChar) {
+                    case 'i':
+                        me.clickAction(btns[0].params)
+                        break
+                    case 't':
+                        me.clickAction(btns[1].params)
+                        break
+                    case 'w':
+                        me.clickAction(btns[2].params)
+                        break
+                    case 'l':
+                        me.clickAction(btns[4].params)
+                        break
                 }
             }
-            --cnt
-        }, 100)
+        }, false)
+        me.btnEventKeys.push(me.keyboardEventKey)
     },
 
     /**
-     * ボタン設置
+     * ボタン挿入
      */
-    createToolBtns () {
-        //console.log('createToolBtns');
+    insert () {
+        console.log('insert');
         const me = this,
             wrapRightEl = document.createElement('ul'),
             wrapLeftEl = document.getElementById('_file').closest('ul')
+
+        if (
+            !document.getElementById('_myStatusButton') ||
+            !!document.getElementById('_addInfoText')
+        ) {
+            return false
+        }
+        console.log('insert exec');
 
         wrapRightEl.style.display = 'flex'
         document.getElementById('_sendEnterActionArea').parentNode.prepend(wrapRightEl)
 
         document.querySelector('.messageTooltip__text').style.whiteSpace = 'pre'
 
-        me.btnEventKeys.forEach(k => {
-            handler.removeListener(k)
-            //console.log(k)
+        me.buttons.forEach((btn, key) => {
+            const o = btns[key]
+            if (o.left) {
+                wrapLeftEl.appendChild(btn)
+            } else {
+                wrapRightEl.appendChild(btn)
+            }
         })
 
-        me.btnEventKeys = []
+        // キーボードイベントハンドラ設定
+        me.setKeyboardEvent()
+    },
+
+    /**
+     * ボタン定義からボタン生成
+     */
+    createButtons () {
+        const me = this
 
         btns.forEach(o => {
-            let btn
-            if (!o.src) {
-                btn = me.createBtn(o)
-            } else {
-                btn = me.createEmoBtn(o)
-            }
-            let k
+            let btn, k
+            btn = me.createButton(o)
             if (o.params) {
                 k = handler.addListener(btn, 'click', () => {
                     document.getElementById(o.id).blur()
@@ -242,52 +343,20 @@ const app = {
                     o.fn()
                 })
             }
+            me.buttons.push(btn)
             me.btnEventKeys.push(k)
-            if (o.left) {
-                wrapLeftEl.appendChild(btn)
-            } else {
-                wrapRightEl.appendChild(btn)
-            }
         })
-
-        // {{{ キーボードショートカット
-
-        let k = handler.addListener(document.getElementById('_chatText'), 'keydown', (e) => {
-            const code = e.which,
-                keyChar = String.fromCharCode(code).toLowerCase();
-            if (e.ctrlKey) {
-                //console.log('push');
-                //console.log(keyChar);
-                switch (keyChar) {
-                    case 'i':
-                        me.clickAction(btns[0].params)
-                        break;
-                    case 't':
-                        me.clickAction(btns[1].params)
-                        break;
-                    case 'w':
-                        me.clickAction(btns[2].params)
-                        break;
-                    case 'l':
-                        me.clickAction(btns[4].params)
-                        break;
-                }
-            }
-        }, false);
-        me.btnEventKeys.push(k)
-
-        // }}}
     },
 
     /**
-     * ボタン生成
+     * ボタン生成（テキスト装飾）
      */
-    createBtn (args) {
+    createButton (args) {
         const li = document.createElement('li'),
             btn = document.createElement('button'),
-            span = document.createElement('span')
+            inner = document.createElement(args.src ? 'img' : 'span')
 
-        btn.appendChild(span)
+        btn.appendChild(inner)
         li.appendChild(btn)
 
         li.style.marginRight = '8px'
@@ -298,47 +367,27 @@ const app = {
         btn.classList.add('_showDescription', 'chatInput__emoticon', 'dmLRfL', 'bPTIFV')
         btn.style.display = 'inline-block'
 
-        span.classList.add(args.iconCls || null)
-        //args.iconNoLg || span.classList.add('icoSizeMiddle')
-        span.style.color = args.color || undefined
-        span.style.paddingBottom = '4px'
-        span.innerHTML = args.html || ''
+        if (args.src) {
+            inner.classList.add('ui_emoticon')
+            inner.style.height = '15px'
+            inner.style.width = '15px'
+            inner.style.paddingBottom = '4px'
+            inner.src = args.src || ''
+            inner.alt = args.alt || ''
+        } else {
+            inner.classList.add(args.iconCls || null)
+            inner.style.paddingBottom = '4px'
+            inner.innerHTML = args.html || ''
+        }
 
         // スタイルを調整
-        for (let property in args.style) {
-            if (args.style.hasOwnProperty(property)) {
-                span.style[property] = args.style[property]
+        if (!!args.innerStyle) {
+            for (let property in args.innerStyle) {
+                if (args.innerStyle.hasOwnProperty(property)) {
+                    inner.style[property] = args.innerStyle[property]
+                }
             }
         }
-        return li
-    },
-
-    /**
-     * ボタン生成
-     */
-    createEmoBtn (args) {
-        const li = document.createElement('li'),
-            btn = document.createElement('button'),
-            img = document.createElement('img')
-
-        btn.appendChild(img)
-        li.appendChild(btn)
-
-        li.style.marginRight = '8px'
-
-        btn.id = args.id
-        btn.setAttribute('role', 'button')
-        btn.setAttribute('aria-label', args.label)
-        btn.classList.add('_showDescription', 'chatInput__emoticon', 'dmLRfL', 'bPTIFV')
-        btn.style.display = 'inline-block'
-
-        img.classList.add('ui_emoticon')
-        img.style.height = '15px'
-        img.style.width = '15px'
-        img.style.paddingBottom = '4px'
-        img.src = args.src || ''
-        img.alt = args.alt || ''
-
         return li
     },
 
@@ -346,7 +395,8 @@ const app = {
      * クリック時処理
      */
     clickAction (args) {
-        const el = document.getElementById('_chatText'),
+        const me = this,
+            el = me.getInputArea(),
             action = args.action || 'info',
             startTag = args.startTag || '[' + action + ']',
             endTag = !!args.addEndTag ? '[/' + action + ']' : '',
@@ -386,8 +436,15 @@ const app = {
 
             el.setSelectionRange(cursor, cursor)
             el.focus()
-        }, 1);
+        }, 1)
     }
 }
 
-app.init()
+window.addEventListener('load', () => {
+    console.log('load');
+    app.init()
+}, {
+  once: true,
+  passive: false,
+  capture: false
+})
