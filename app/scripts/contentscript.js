@@ -91,11 +91,11 @@ const btns = [
         label: 'メッセージに[hr]を追加します [Ctrl + l]',
         iconCls: 'btnPrimary',
         iconNoLg: true,
-        html: '&nbsp;hr&nbsp;',
+        html: 'hr',
         innerStyle: {
             fontSize: '10px',
             borderRadius: '3px',
-            padding: '3px 1px',
+            padding: '3px 4px',
             position: 'relative',
             top: '-2px',
             left: '-1px'
@@ -377,7 +377,7 @@ const app = {
         } else {
             inner.classList.add(args.iconCls || null)
             inner.style.paddingBottom = '4px'
-            inner.innerHTML = args.html || ''
+            inner.textContent = args.html || ''
         }
 
         // スタイルを調整
