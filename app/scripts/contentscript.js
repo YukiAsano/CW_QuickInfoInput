@@ -40,7 +40,7 @@ const btns = [
         label: 'メッセージに[info][/info]を追加します [Ctrl + i]',
         iconCls: 'icoFontInfo',
         innerStyle: {
-            paddingBottom: '4px'
+            paddingBottom: '2px'
         },
         params: {
             action: 'info',
@@ -53,7 +53,7 @@ const btns = [
         iconCls: 'icoFontInfo',
         innerStyle: {
             color: 'blue',
-            paddingBottom: '4px'
+            paddingBottom: '2px'
         },
         params: {
             action: 'info',
@@ -66,7 +66,7 @@ const btns = [
         label: 'メッセージに[code][/code]を追加します [Ctrl + w]',
         iconCls: 'icoFontSetting',
         innerStyle: {
-            paddingBottom: '4px'
+            paddingBottom: '2px'
         },
         params: {
             action: 'code',
@@ -79,7 +79,7 @@ const btns = [
         iconCls: 'icoFontMessegeQuote',
         iconNoLg: true,
         innerStyle: {
-            paddingBottom: '4px'
+            paddingBottom: '2px'
         },
         params: {
             action: 'qt',
@@ -95,9 +95,9 @@ const btns = [
         innerStyle: {
             fontSize: '10px',
             borderRadius: '3px',
-            padding: '3px 4px',
+            padding: '2px 4px',
             position: 'relative',
-            top: '-2px',
+            top: '-1px',
             left: '-1px'
         },
         params: {
@@ -203,9 +203,7 @@ const app = {
         return !!document.getElementById('_chatText') &&
             !!document.getElementById('_chatSendArea') &&
             !!document.getElementById('_file') &&
-            !!document.getElementById('_myStatusButton') &&
-            !!document.getElementById('_sendEnterActionArea') &&
-            !!document.querySelector('.messageTooltip__text')
+            !!document.getElementById('_myStatusButton')
     },
 
     /**
@@ -295,7 +293,9 @@ const app = {
         // console.log('insert');
         const me = this,
             wrapRightEl = document.createElement('ul'),
-            wrapLeftEl = document.getElementById('_file').closest('ul')
+            wrapLeftEl = document.getElementById('_file').closest('ul'),
+            parentRightEl = document.getElementById('_chatSendArea').querySelector('ul + div'),
+            tooltipEl = document.querySelector('.messageTooltip__text')
 
         if (
             !document.getElementById('_myStatusButton') ||
@@ -305,16 +305,19 @@ const app = {
         }
         // console.log('insert exec');
 
-        wrapRightEl.style.display = 'flex'
-        document.getElementById('_sendEnterActionArea').parentNode.prepend(wrapRightEl)
-
-        document.querySelector('.messageTooltip__text').style.whiteSpace = 'pre'
+        if (parentRightEl) {
+            wrapRightEl.style.display = 'flex'
+            parentRightEl.prepend(wrapRightEl)
+        }
+        if (tooltipEl) {
+            tooltipEl.style.whiteSpace = 'pre'
+        }
 
         me.buttons.forEach((btn, key) => {
             const o = btns[key]
             if (o.left) {
                 wrapLeftEl.appendChild(btn)
-            } else {
+            } else if (parentRightEl) {
                 wrapRightEl.appendChild(btn)
             }
         })
@@ -364,8 +367,11 @@ const app = {
         btn.id = args.id
         btn.setAttribute('role', 'button')
         btn.setAttribute('aria-label', args.label)
-        btn.classList.add('_showDescription', 'chatInput__emoticon', 'dmLRfL', 'bPTIFV')
-        btn.style.display = 'inline-block'
+        btn.classList.add('_showDescription', 'chatInput__emoticon', 'dmLRfL', 'bPTIFV', '_CWIcon')
+        //btn.style.display = 'inline-block'
+        btn.style.border = 'none'
+        btn.style.backgroundColor = 'transparent'
+        btn.style.cursor = 'pointer'
 
         if (args.src) {
             inner.classList.add('ui_emoticon')
