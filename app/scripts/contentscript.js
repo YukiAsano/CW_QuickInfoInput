@@ -225,8 +225,8 @@ const app = {
     isChat () {
         return !!document.getElementById('_chatText') &&
             !!document.getElementById('_chatSendArea') &&
-            !!document.getElementById('_file') &&
-            !!document.getElementById('_myStatusButton')
+            !!document.getElementById('_file')// &&
+            // !!document.getElementById('_myStatusButton')
     },
 
     /**
@@ -321,7 +321,7 @@ const app = {
             tooltipEl = document.querySelector('.messageTooltip__text')
 
         if (
-            !document.getElementById('_myStatusButton') ||
+            // !document.getElementById('_myStatusButton') ||
             !!document.getElementById('_addInfoText')
         ) {
             return false
