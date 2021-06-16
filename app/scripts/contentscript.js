@@ -182,8 +182,8 @@ const btns = [
                 '  height: 34px;',
                 '}',
                 '.content {',
-                '  top: 34px;',
-                '  height: calc(100% - 34px);',
+                //'  top: 34px;',
+                '  height: calc(100% - 48px);',
                 '}',
             ].join("\n")
             if (document.getElementById('_addStyleCWQII')) {
