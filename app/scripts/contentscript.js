@@ -466,8 +466,8 @@ const app = {
         } else {
             inner.classList.add(args.iconCls || null)
             inner.style.paddingBottom = '4px'
-            //inner.textContent = args.html || ''
-            inner.innerHTML = args.html || ''
+            inner.textContent = args.html || ''
+            //inner.innerHTML = args.html || ''
         }
 
         // スタイルを調整
