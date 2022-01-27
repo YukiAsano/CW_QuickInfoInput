@@ -38,9 +38,24 @@ const btns = [
         id: '_addInfoText',
         left: true,
         label: 'メッセージに[info][/info]を追加します [Ctrl + i]',
-        iconCls: 'icoFontInfo',
+        // iconCls: 'icoFontInfo',
+        // html: [
+        // '<span>',
+        // '<svg viewBox="0 0 10 10" width="16" height="16" aria-hidden="true">',
+        // '<use fill-rule="evenodd" xlink:href="#icon_info">',
+        // '</use>',
+        // '</svg>',
+        // '</span>'
+        // ].join(''),
+        html: 'info',
+        iconCls: 'material-icons-outlined',
         innerStyle: {
-            paddingBottom: '2px'
+            display: 'none',
+            paddingBottom: '2px',
+            fontSize: 0
+        },
+        outerStyle: {
+            paddingTop: '5px'
         },
         params: {
             action: 'info',
@@ -50,10 +65,17 @@ const btns = [
         id: '_addInfoWithTitleText',
         left: true,
         label: 'メッセージに[info][title][/title][/info]を追加します [Ctrl + t]',
-        iconCls: 'icoFontInfo',
+        // iconCls: 'icoFontInfo',
+        iconCls: 'material-icons-outlined',
+        html: 'info',
         innerStyle: {
+            display: 'none',
             color: 'blue',
-            paddingBottom: '2px'
+            paddingBottom: '2px',
+            fontSize: 0
+        },
+        outerStyle: {
+            paddingTop: '5px'
         },
         params: {
             action: 'info',
@@ -64,27 +86,34 @@ const btns = [
         id: '_addCodeText',
         left: true,
         label: 'メッセージに[code][/code]を追加します [Ctrl + w]',
-        iconCls: 'icoFontSetting',
+        // iconCls: 'icoFontSetting',
+        iconCls: 'material-icons-outlined',
+        html: 'settings',
         innerStyle: {
-            paddingBottom: '2px'
+            display: 'none',
+            paddingBottom: '2px',
+            fontSize: 0
+        },
+        outerStyle: {
+            paddingTop: '5px'
         },
         params: {
             action: 'code',
             addEndTag: true
         }
-    }, {
-        id: '_addQtText',
-        left: true,
-        label: 'メッセージに[qt][/qt]を追加します',
-        iconCls: 'icoFontMessegeQuote',
-        iconNoLg: true,
-        innerStyle: {
-            paddingBottom: '2px'
-        },
-        params: {
-            action: 'qt',
-            addEndTag: true
-        }
+    // }, {
+    //     id: '_addQtText',
+    //     left: true,
+    //     label: 'メッセージに[qt][/qt]を追加します',
+    //     iconCls: 'icoFontMessegeQuote',
+    //     iconNoLg: true,
+    //     innerStyle: {
+    //         paddingBottom: '2px'
+    //     },
+    //     params: {
+    //         action: 'qt',
+    //         addEndTag: true
+    //     }
     }, {
         id: '_addHrText',
         left: true,
@@ -97,7 +126,7 @@ const btns = [
             borderRadius: '3px',
             padding: '2px 4px',
             position: 'relative',
-            top: '-1px',
+            //top: '-1px',
             left: '-1px'
         },
         params: {
@@ -128,14 +157,28 @@ const btns = [
             'Ctrl + w : [code][/code]',
             'Ctrl + l : [hr]',
         ].join("\n"),
-        iconCls: 'icoFontHelp',
+        //iconCls: 'icoFontHelp',
+        iconCls: 'material-icons-outlined',
+        html: 'help_outline',
+        innerStyle: {
+            display: 'none',
+            paddingBottom: '2px',
+            fontSize: 0
+        },
         fn: () => {
             return false
         }
     }, {
         id: '_addStyle',
         label: '【実験】縮んだり伸びたりします',
-        iconCls: 'icoFontActionMore',
+        //iconCls: 'icoFontActionMore',
+        iconCls: 'material-icons-outlined',
+        html: 'more_horiz',
+        innerStyle: {
+            display: 'none',
+            paddingBottom: '2px',
+            fontSize: 0
+        },
         fn: () => {
             const style = [
                 '.roomListItem,',
@@ -241,6 +284,22 @@ const app = {
                 // console.log('loaded');
                 clearInterval(checkLoaded)
 
+                var linkTag = document.createElement('link');
+                linkTag.setAttribute('href', 'https://fonts.googleapis.com/icon?family=Material+Icons%7CMaterial+Icons+Outlined');
+                linkTag.setAttribute('rel', 'stylesheet');
+                document.getElementsByTagName("head")[0].appendChild(linkTag);
+
+                linkTag.onload = function() {
+                    document.querySelectorAll('.material-icons-outlined').forEach(function(btn) {
+                        btn.style.display = ''
+                    })
+                    setTimeout(function() {
+                        document.querySelectorAll('.material-icons-outlined').forEach(function(btn) {
+                            btn.style.fontSize = '20px'
+                        })
+                    }, 1000);
+                }
+
                 // ボタン生成
                 me.createButtons()
 
@@ -330,6 +389,7 @@ const app = {
 
         if (parentRightEl) {
             wrapRightEl.style.display = 'flex'
+            wrapRightEl.style.paddingTop = '5px'
             parentRightEl.prepend(wrapRightEl)
         }
         if (tooltipEl) {
@@ -385,7 +445,7 @@ const app = {
         btn.appendChild(inner)
         li.appendChild(btn)
 
-        li.style.marginRight = '8px'
+        li.style.marginRight = '2px'
 
         btn.id = args.id
         btn.setAttribute('role', 'button')
@@ -406,7 +466,8 @@ const app = {
         } else {
             inner.classList.add(args.iconCls || null)
             inner.style.paddingBottom = '4px'
-            inner.textContent = args.html || ''
+            //inner.textContent = args.html || ''
+            inner.innerHTML = args.html || ''
         }
 
         // スタイルを調整
@@ -414,6 +475,15 @@ const app = {
             for (let property in args.innerStyle) {
                 if (args.innerStyle.hasOwnProperty(property)) {
                     inner.style[property] = args.innerStyle[property]
+                }
+            }
+        }
+
+        // liの調整
+        if (!!args.outerStyle) {
+            for (let property in args.outerStyle) {
+                if (args.outerStyle.hasOwnProperty(property)) {
+                    li.style[property] = args.outerStyle[property]
                 }
             }
         }
