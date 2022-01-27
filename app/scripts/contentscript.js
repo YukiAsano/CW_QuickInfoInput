@@ -277,6 +277,15 @@ const app = {
      */
     init () {
         const me = this
+        changeIconColor = () => {
+            const isDark = document.body.classList.contains('dark')
+            document.querySelectorAll('.material-icons-outlined').forEach((btn) => {
+                if (btn.style.color !== 'blue') {
+                    btn.style.color = isDark ? '#CADAF7' : ''
+                }
+            })
+        }
+
         let cnt = 100,
         loadedFn = () => {
             // console.log('load check');
@@ -284,17 +293,17 @@ const app = {
                 // console.log('loaded');
                 clearInterval(checkLoaded)
 
-                var linkTag = document.createElement('link');
+                const linkTag = document.createElement('link');
                 linkTag.setAttribute('href', 'https://fonts.googleapis.com/icon?family=Material+Icons%7CMaterial+Icons+Outlined');
                 linkTag.setAttribute('rel', 'stylesheet');
                 document.getElementsByTagName("head")[0].appendChild(linkTag);
 
-                linkTag.onload = function() {
-                    document.querySelectorAll('.material-icons-outlined').forEach(function(btn) {
+                linkTag.onload = () => {
+                    document.querySelectorAll('.material-icons-outlined').forEach((btn) => {
                         btn.style.display = ''
                     })
-                    setTimeout(function() {
-                        document.querySelectorAll('.material-icons-outlined').forEach(function(btn) {
+                    setTimeout(() => {
+                        document.querySelectorAll('.material-icons-outlined').forEach((btn) => {
                             btn.style.fontSize = '20px'
                         })
                     }, 1000);
@@ -305,6 +314,8 @@ const app = {
 
                 // ボタン設置
                 me.insert()
+
+                changeIconColor()
 
                 const observer = new MutationObserver((list) => {
                     // console.log(list);
@@ -325,6 +336,28 @@ const app = {
                     {
                         attributes: false,
                         childList: true,
+                        characterData: false
+                    }
+                )
+
+                const observerBody = new MutationObserver((list) => {
+                    // console.log(list);
+                    for (let mutation of list) {
+                        if (
+                            mutation.type === 'attributes' &&
+                            mutation.target.nodeName === 'BODY'
+                        ) {
+                            changeIconColor()
+                            break
+                        }
+                    }
+                })
+
+                observerBody.observe(
+                    document.body,
+                    {
+                        attributes: true,
+                        childList: false,
                         characterData: false
                     }
                 )
